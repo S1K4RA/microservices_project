@@ -1,3 +1,12 @@
+import time
+from app import celery
+from celery.utils.log import get_task_logger
+
+logger = get_task_logger(__name__)
+
+# from app import app
+# logger = get_task_logger(__name__)
+
 def prime(i, primes):
         for prime in primes:
             if not (i == prime or i % prime):
@@ -38,19 +47,20 @@ def palindrome_historic(n):
         i += 1
 
 
-from nameko.rpc import rpc
 
-class CalculatorService:
-    name = "calculator_service"
+@celery.task(name='app.tasks.primeService')
+def primeService(index):
+    print("Task loaded")
+    logger.info('Requested.Task Started')
+    result = historic(index)
+    logger.info('Task Completed')
+    return result;
     
-    @rpc
-    def prime_service(self, index):
-        result = historic(index)
-        return result
-        
+@celery.task(name='app.tasks.primePalindromeService')
+def primePalindromeService(index):
+    print("Task loaded")
+    logger.info('Requested.Task Started')
+    result = palindrome_historic(index)
+    logger.info('Task Completed')
+    return result;
     
-    @rpc
-    def prime_palindrome_service(self, index):
-        result = palindrome_historic(index)
-        return result
-        
