@@ -1,12 +1,21 @@
-from flask import Flask
-from celery import Celery
-app = Flask(__name__)
+from flask import Flask, render_template, redirect, request, session
+from flask_session import Session
+
+import redis
+#Init Flask
+app = Flask(__name__,template_folder="templates/")
+
+app.secret_key = 'BAD_SECRET_KEY'
+
+#Flask Session
+app.config["SESSION_PERMANENT"] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config["SESSION_TYPE"] = 'redis'
+app.config['SESSION_REDIS'] = redis.from_url('redis://redis:6379')
+
+# Create and initialize the Flask-Session object AFTER `app` has been configured
+server_session = Session(app)
 
 
-celery = Celery(app.name, 
-            broker='redis://localhost:6379/0',
-            backend='redis://localhost:6379/0',
-            include=['app.tasks']
-            )
-
-from app import routes, tasks
+from app import routes
+# from worker import tasks

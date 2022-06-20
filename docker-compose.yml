@@ -1,0 +1,67 @@
+version: "3.7"
+services:
+  flask_app:
+    build: 
+      dockerfile: DockerFile
+      context: app
+    environment:
+      - REDIS_URL=redis
+      - REDIS_PORT=6379
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      dockerfile: DockerFile
+      context: worker
+    user: nobody
+    depends_on:
+      - redis
+      - flask_app
+
+  redis:
+    container_name: redis
+    image: redis:5.0.5
+    hostname: redis
+    ports:
+      - '6379:6379'
+
+
+
+# version: "3.7"
+
+# services:
+#   flask_app:
+#     container_name: microservices_project
+#     build: 
+#       dockerfile: DockerFile
+#       context: app
+#     ports:
+#       - "5000:5000"
+#     links:
+#       - redis
+#     depends_on:
+#       - redis
+#     environment:
+#       - REDIS_URL=redis
+#       - REDIS_PORT=6379
+
+#   redis:
+#     container_name: redis
+#     image: redis:5.0.5
+#     hostname: redis
+
+#   worker:
+#     build:
+#       dockerfile: DockerFile
+#       context: app
+#     hostname: worker
+#     entrypoint: celery
+#     command: -A tasks worker --loglevel=info -P gevent
+#     links:
+#       - redis
+#     depends_on:
+#       - redis
+#       - flask_app

@@ -1,11 +1,15 @@
 import time
-from app import celery
+from celery import Celery
 from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
-# from app import app
-# logger = get_task_logger(__name__)
+
+celery = Celery("app", 
+            broker='redis://redis:6379/0',
+            backend='redis://redis:6379/0',
+            include=['tasks']
+            )
 
 def prime(i, primes):
         for prime in primes:
@@ -45,8 +49,6 @@ def palindrome_historic(n):
             if p == n:
                 return plndrm[-1]
         i += 1
-
-
 
 @celery.task(name='app.tasks.primeService')
 def primeService(index):
