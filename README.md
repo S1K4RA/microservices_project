@@ -32,8 +32,9 @@ broker, backend : redis://localhost:6379/0
 Ver.2 Guide
 Docker and docker-compose supported
 
->> docker-compose build
->> docker-compose up
+> docker-compose build
+> 
+> docker-compose up
 
 
 redis for celery
