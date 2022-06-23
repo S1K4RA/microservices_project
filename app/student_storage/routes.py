@@ -83,7 +83,7 @@ def student_blueprint(conn):
         session.pop('key', None)
         return redirect("/")
            
-    @student_bp.route("/upload", methods=["POST", "GET"])
+    @student_bp.route("/paper/upload", methods=["POST", "GET"])
     def upload_file():
         if request.method == 'POST':
             if 'file' not in request.files:
@@ -109,7 +109,8 @@ def student_blueprint(conn):
                     current_app.logger.info("Failed To Insert" + str(e))
                 cursor.close()
                     
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                file.save(os.path.join(current_app.root_path,UPLOAD_FOLDER, filename))
+                current_app.logger.info(os.path.join(current_app.root_path,UPLOAD_FOLDER, filename))
                 return '<span>File Succesfully Uploaded. Owner : {} </span>'.format(session['nrp'])
                 # return redirect(url_for('student_storage.download_file', name=filename))
         return render_template("upload.html")
@@ -118,6 +119,7 @@ def student_blueprint(conn):
     def find_paper(name):
         if request.method == 'POST':
             return redirect(url_for('student_storage.download_paper', name=name))
+        current_app.logger.info(os.path.join(current_app.root_path,UPLOAD_FOLDER, name))
         cursor = conn.cursor()
         sql = "SELECT * FROM paper WHERE path = '{}'".format(name)
         cursor.execute(sql)
@@ -135,7 +137,7 @@ def student_blueprint(conn):
         if cursor.rowcount > 0:
             rows = cursor.fetchone()
             if rows['owner'] == session['nrp']:
-                return send_from_directory(UPLOAD_FOLDER, filename)
+                return send_from_directory(os.path.join(current_app.root_path,UPLOAD_FOLDER), filename)
             else:
                 return '<span>Access Denied. Owner: {} </span>'.format(rows['owner'])
         return '<span>File Not Found </span>'
