@@ -1,6 +1,5 @@
 import json
-from multiprocessing import connection
-from flask import Flask, render_template, redirect, request, session, jsonify
+from flask import Flask, render_template, redirect, session
 from flask_session import Session
 import redis
 
@@ -39,11 +38,11 @@ conn = mysql.connect()
 
 #Blueprints
 from .calculator import calculator_bp
-from .transfer import trf_bp
+from .cloud import cloud_bp
 from .student_storage import routes
 
 app.register_blueprint(calculator_bp)
-app.register_blueprint(trf_bp)
+app.register_blueprint(cloud_bp)
 app.register_blueprint(student_blueprint(conn))
 
 # Create and initialize the Flask-Session object AFTER `app` has been configured
