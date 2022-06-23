@@ -3,7 +3,10 @@
 **Simple Microservices Project Using Docker** <br>
 Default access on http://127.0.0.1:5000/
 
-Libraries / Packages used:
+
+### Explanation
+
+Libraries / Packages used: <br>
 Flask - https://flask.palletsprojects.com/en/2.1.x/ <br>
 Celery - https://docs.celeryq.dev/en/stable/ <br>
 Redis - https://redis.io/docs/ <br>
@@ -14,6 +17,9 @@ docker-compose - https://docs.docker.com/compose/
 Image used : <br>
 MySQL - https://hub.docker.com/_/mysql <br>
 phpMyAdmin - https://hub.docker.com/r/phpmyadmin/phpmyadmin/ <br>
+
+
+### Features
 
 There are 3 simple microservices written here:
 1. Student Storage <br>
@@ -49,6 +55,9 @@ Python
 <code>pip install -U Celery</code>
 <code>pip install "celery[redis]"</code>
 <code>pip install Flask</code>
+
+
+### How To Run
 
 **Running Without Docker** <br>
 Warning : Might not work. you need to change a few line of codes.<br>
