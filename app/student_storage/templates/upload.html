@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}Upload File{% endblock %}
+{% block main %}
+
+{% if session.key %}
+  <h1>Upload New Paper</h1>
+  <form method=post enctype=multipart/form-data style="display: inline-grid;">
+    <input type=file name=file required>
+    <label for="title">Title</label>
+    <input placeholder="Title" name="title" id="title"required>
+    <label for="abstract">Abstract</label>
+    <textarea name="abstract" id="abstract" row="20" cols="80" required>Write The Abstract Here</textarea>
+    <input type=submit value=Upload>
+  </form>
+{% else %}
+  You are not Logged In. <a href="{{ url_for('student_storage.login') }}">login</a>.
+{% endif %}
+ 
+{% endblock %} 

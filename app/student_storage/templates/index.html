@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block main %}
+ 
+   {% if session.key %}
+      Hello {{ session.name }} <a href="{{ url_for('student_storage.logout') }}">logout</a>.
+      <p> {{ session.key }} </p>
+   {% else %}
+      You are not Logged In. <a href="{{ url_for('student_storage.login') }}">login</a>.
+   {% endif %}
+ 
+   <h1>Search Paper</h1>
+   
+
+{% endblock %}

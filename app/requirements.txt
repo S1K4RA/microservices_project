@@ -1,3 +1,7 @@
 Flask
 Flask-Session
 celery[redis]
+redis
+cryptography
+flask-mysql
+pymysql

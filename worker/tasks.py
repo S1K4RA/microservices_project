@@ -4,7 +4,6 @@ from celery.utils.log import get_task_logger
 
 logger = get_task_logger(__name__)
 
-
 celery = Celery("app", 
             broker='redis://redis:6379/0',
             backend='redis://redis:6379/0',
@@ -50,7 +49,7 @@ def palindrome_historic(n):
                 return plndrm[-1]
         i += 1
 
-@celery.task(name='app.tasks.primeService')
+@celery.task(name='calculator.tasks.primeService')
 def primeService(index):
     print("Task loaded")
     logger.info('Requested.Task Started')
@@ -58,7 +57,7 @@ def primeService(index):
     logger.info('Task Completed')
     return result;
     
-@celery.task(name='app.tasks.primePalindromeService')
+@celery.task(name='calculator.tasks.primePalindromeService')
 def primePalindromeService(index):
     print("Task loaded")
     logger.info('Requested.Task Started')

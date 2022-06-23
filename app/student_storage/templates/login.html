@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block title %}Login{% endblock %}
+{% block main %}
+ 
+   <h1> LOGIN </h1>
+   <form action="{{ url_for('student_storage.login') }}" method="POST">
+      <input placeholder="Email" autocomplete="off" type="text" name="email">
+      <input placeholder="Password" autocomplete="off" type="password" name="password">
+      <input type="submit" name="Login">
+   </form>
+ 
+   <p>Dont Have An Account ? <a href="{{ url_for('student_storage.register') }}">Register Here</a></p>
+{% endblock %} 

@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block title %}Upload File{% endblock %}
+{% block main %}
+
+{% if title %}
+
+    <h2>{{ title }}</h2>
+
+    <h3>ABSTRACT</h3>
+    <p>{{ abstract }}</p>
+
+    {% if session.key %}
+    <form action="" method="POST">
+        <input type="submit" name="download" value="Download" />
+    </form>
+    {% else %}
+    You are not Logged In. <a href="{{ url_for('student_storage.login') }}">login</a>.
+    {% endif %}
+
+{% else %}
+    <span>File Not Found</span>
+{% endif %}
+
+{% endblock %} 
