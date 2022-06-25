@@ -10,6 +10,7 @@ Libraries / Packages used: <br>
 Flask - https://flask.palletsprojects.com/en/2.1.x/ <br>
 Celery - https://docs.celeryq.dev/en/stable/ <br>
 Redis - https://redis.io/docs/ <br>
+Elastichsearch - https://www.elastic.co/guide/index.html <br>
 
 This microservices is also deployed on Docker using docker-compose <br>
 docker-compose - https://docs.docker.com/compose/ 
@@ -56,6 +57,7 @@ Python
 <code>pip install "celery[redis]"</code>
 <code>pip install Flask</code>
 
+*See more at requirements.txt 
 
 ### How To Run
 
@@ -86,5 +88,12 @@ broker, backend : redis://localhost:6379/0
 
 redis for celery<br>
 broker, backend : redis://redis:6379/0
+
+### Elasticsearch
+
+Use code below to re-index <br>
+<code>es.indices.delete(index='paper', ignore=[400, 404])<br>
+es.create(index='paper', id=1, ignore=400, body=mapping)</code>
+    
 
 
