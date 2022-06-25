@@ -2,7 +2,7 @@ import json
 from flask import Flask, render_template, redirect, session
 from flask_session import Session
 import redis
-
+from elasticsearch import Elasticsearch
 
 UPLOAD_FOLDER = 'static'
 
@@ -29,12 +29,17 @@ app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'research_paper'
 app.config['MYSQL_DATABASE_HOST'] = 'db'
 app.config['MYSQL_DATABASE_PORT'] = 3306
-app.config['MYSQL_DATABASE_PORT'] = 3306
+
+app.config['ELASTICSEARCH_URL'] = "http://elasticsearch:9200"
 
 #MySQL
 from .student_storage.routes import mysql, student_blueprint
 mysql.init_app(app) 
 conn = mysql.connect()
+
+#Elasticsearch
+es = Elasticsearch(app.config['ELASTICSEARCH_URL'])
+
 
 #Blueprints
 from .calculator import calculator_bp
@@ -43,7 +48,7 @@ from .student_storage import routes
 
 app.register_blueprint(calculator_bp)
 app.register_blueprint(cloud_bp)
-app.register_blueprint(student_blueprint(conn))
+app.register_blueprint(student_blueprint(conn,es))
 
 # Create and initialize the Flask-Session object AFTER `app` has been configured
 Session(app)

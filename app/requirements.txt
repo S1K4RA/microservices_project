@@ -5,3 +5,4 @@ redis
 cryptography
 flask-mysql
 pymysql
+elasticsearch

@@ -27,7 +27,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(os.path.join(current_app.root_path,UPLOAD_FOLDER, filename))
             return '<span>File Succesfully Uploaded</span>'
-    return render_template("upload.html")
+    return render_template("nupload.html")
 
 @cloud_bp.route('/cloud/download/<name>')
 def download_file(name):

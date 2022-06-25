@@ -1,5 +1,5 @@
-from fileinput import filename
-from turtle import title
+from ast import keyword
+import elasticsearch
 from flask import Blueprint, render_template, redirect, request, session, jsonify, current_app, url_for, flash, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -11,8 +11,21 @@ import pymysql
 #MySQL
 mysql = MySQL(cursorclass=pymysql.cursors.DictCursor) 
 
-def student_blueprint(conn):
+def student_blueprint(conn, es):
     student_bp = Blueprint("student_storage",__name__,template_folder="templates/",url_prefix='/student')
+    
+    mapping = {
+        "mappings": {
+        "properties": {
+            "title":    { "type": "keyword" },  
+            "abstract":  { "type": "text"  }, 
+            "author":   { "type": "text"  }     
+            }
+        }
+    }
+    # Use code below to re-index
+    # es.indices.delete(index='paper', ignore=[400, 404])
+    # es.create(index='paper', id=1, ignore=400, body=mapping)
     
     def allowed_file(filename):
         return '.' in filename and \
@@ -74,8 +87,22 @@ def student_blueprint(conn):
             
         return render_template("register.html")
 
-    @student_bp.route("/")
+    @student_bp.route("/", methods=["POST", "GET"])
     def index():
+        if request.method == 'POST':
+            keyword = request.form['keyword']
+            current_app.logger.info(keyword)
+            body = {
+                'query': {
+                    "multi_match": {
+                        "query": keyword,
+                        "fields": ['*']
+                    }
+                }
+            }
+            result = es.search(index="paper", body=body)
+            return jsonify(result['hits'])
+            
         return render_template('index.html')
 
     @student_bp.route("/logout")
@@ -111,6 +138,15 @@ def student_blueprint(conn):
                     
                 file.save(os.path.join(current_app.root_path,UPLOAD_FOLDER, filename))
                 current_app.logger.info(os.path.join(current_app.root_path,UPLOAD_FOLDER, filename))
+                
+                esBody = {
+                    'title': _title,
+                    'abstract': _abs,
+                    'author': session['nrp'] + " - " + session['name'],
+                }
+                
+                es.index(index="paper", body=esBody)
+                
                 return '<span>File Succesfully Uploaded. Owner : {} </span>'.format(session['nrp'])
                 # return redirect(url_for('student_storage.download_file', name=filename))
         return render_template("upload.html")

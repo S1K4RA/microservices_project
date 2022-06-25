@@ -1,5 +1,25 @@
 version: "3.7"
 services:
+  elasticsearch:
+      build: 
+        dockerfile: DockerFile
+        context: elasticsearch
+      volumes:
+        - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      ports:
+        - "9200:9200"
+        - "9300:9300"
+      environment:
+        - "cluster.name=elasticsearch"
+        - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+        - "XPACK_SECURITY_ENABLED=false"
+      networks:
+        - elk
+      healthcheck:
+        test: "curl http://elasticsearch:9200"
+        interval: "1s"
+        timeout: "3s"
+        retries: 60
   flask_app:
     build: 
       dockerfile: DockerFile
@@ -9,10 +29,17 @@ services:
       - REDIS_PORT=6379
     ports:
       - "5000:5000"
-    depends_on:
-      - redis
-      - db
+    networks:
+        - elk
+    depends_on: 
+      elasticsearch:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      db:
+        condition: service_started
     
+  
   worker:
     build:
       dockerfile: DockerFile
@@ -21,14 +48,16 @@ services:
     depends_on:
       - redis
       - flask_app
-
+    networks:
+        - elk
   redis:
     container_name: redis
     image: redis:5.0.5
     hostname: redis
     ports:
       - '6379:6379'
-
+    networks:
+        - elk
   db:
     image: mysql
     command: --default-authentication-plugin=caching_sha2_password
@@ -40,6 +69,8 @@ services:
       - SYS_NICE
     volumes:
       - ./db:/docker-entrypoint-initdb.d/:ro
+    networks:
+        - elk
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     restart: always
@@ -49,40 +80,8 @@ services:
       PMA_PASSWORD: root
     ports:
       - "8080:80"
-
-
-# version: "3.7"
-
-# services:
-#   flask_app:
-#     container_name: microservices_project
-#     build: 
-#       dockerfile: DockerFile
-#       context: app
-#     ports:
-#       - "5000:5000"
-#     links:
-#       - redis
-#     depends_on:
-#       - redis
-#     environment:
-#       - REDIS_URL=redis
-#       - REDIS_PORT=6379
-
-#   redis:
-#     container_name: redis
-#     image: redis:5.0.5
-#     hostname: redis
-
-#   worker:
-#     build:
-#       dockerfile: DockerFile
-#       context: app
-#     hostname: worker
-#     entrypoint: celery
-#     command: -A tasks worker --loglevel=info -P gevent
-#     links:
-#       - redis
-#     depends_on:
-#       - redis
-#       - flask_app
+    networks:
+        - elk
+networks:
+  elk:
+    driver: bridge
